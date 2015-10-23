@@ -28,7 +28,7 @@ class Row_Handler():
         self.below_handler = None
 
         # Run when you are ready to go!
-        self.row_lock = threading.Lock()
+        self.in_loop = threading.Event()
         self.i_updated = threading.Event()
 
         self.tmpA = tmpA
@@ -45,11 +45,9 @@ class Row_Handler():
         if self.below_handler is not None:
             go_cond_2 = (self.i == self.below_handler.i)
         if go_cond_1 and go_cond_2:
-            if self.above_handler is not None:
-                self.above_handler.row_lock.acquire()
-            self.row_lock.acquire()
+            self.in_loop.set() # We are in the loop! Solve deadlocks.
             if self.below_handler is not None:
-                self.below_handler.row_lock.acquire()
+                self.below_handler.in_loop.wait()
 
             # Do stuff
             filtering.median_3x3_row(self.tmpA, self.tmpB, self.row_num)
@@ -62,11 +60,7 @@ class Row_Handler():
 
             self.i += 1
 
-            if self.above_handler is not None:
-                self.above_handler.row_lock.release()
-            self.row_lock.release()
-            if self.below_handler is not None:
-                self.below_handler.row_lock.release()
+            self.in_loop.clear()
 
             # Give other threads a chance to grab locks and update
             self.i_updated.set()
