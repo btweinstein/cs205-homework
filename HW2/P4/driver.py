@@ -18,6 +18,8 @@ import threading
 from or_event import OrEvent
 from threadpool import ThreadPool
 
+print_lock = threading.Lock()
+
 class Row_Handler():
     def __init__(self, row_num, tmpA, tmpB, num_iterations=10):
         self.i = 0
@@ -37,63 +39,95 @@ class Row_Handler():
 
 
     def go(self): #
+        print_lock.acquire()
         print 'Go!' , self.row_num, self.i
-        go_cond_1 = True
-        if self.above_handler is not None:
-            go_cond_1 = (self.i == self.above_handler.i)
-        go_cond_2 = True
-        if self.below_handler is not None:
-            go_cond_2 = (self.i == self.below_handler.i)
-        if go_cond_1 and go_cond_2:
+        print_lock.release()
+        while True:
+            # Grab in blocks of three.
 
-            if self.above_handler is not None:
-                self.above_handler.in_loop.wait()
-                self.above_handler.in_loop.set()
-            self.in_loop.set() # We are in the loop! Solve deadlocks.
-            if self.below_handler is not None:
-                self.below_handler.in_loop.wait()
-                self.below_handler.in_loop.set()
+            above_exists = self.above_handler is not None
+            below_exists = self.below_handler is not None
 
-            # Do stuff
-            filtering.median_3x3_row(self.tmpA, self.tmpB, self.row_num)
-            # Swap tmpA and tmpB; doesn't recreate arrays, just swaps pointers!
-            potatoA = self.tmpA
-            potatoB = self.tmpB
+            go_cond_1 = True
+            if above_exists:
+                go_cond_1 = (self.i == self.above_handler.i)
+            go_cond_2 = True
+            if below_exists:
+                go_cond_2 = (self.i == self.below_handler.i)
+            if go_cond_1 and go_cond_2:
 
-            self.tmpA = potatoB
-            self.tmpB = potatoA
+                if above_exists and below_exists:
+                    self.above_handler.in_loop.wait()
 
-            if self.above_handler is not None:
-                self.above_handler.in_loop.clear()
-            self.in_loop.clear() # We are in the loop! Solve deadlocks.
-            if self.below_handler is not None:
-                self.below_handler.in_loop.clear()
+                    cond1 = not self.above_handler.in_loop.is_set()
+                    cond2 = not self.in_loop.is_set()
+                    cond3 = not self.below_handler.in_loop.is_set()
 
-            # Give other threads a chance to grab locks and update
-            self.i += 1
-            self.i_updated.set()
-            self.i_updated.clear()
+                    if cond1 and cond2 and cond3:
+                        self.above_handler.in_loop.set()
+                        self.in_loop.set()
+                        self.below_handler.in_loop.set()
+                    else:
 
-        if self.i != self.num_iterations: # you are not done yet!
-            self.wait()
 
-    def wait(self):
-        """Wait until one of your neighbors updates their iteration"""
 
-        # Try to go if you neighbors are updated...
-        if self.above_handler is None:
-            print 'Waiting for below handler to update...' , self.row_num, self.i
-            self.below_handler.i_updated.wait()
-            print 'Below handler updated!' , self.row_num, self.i
-        elif self.below_handler is None:
-            print 'Waiting for above handler to update...' , self.row_num, self.i
-            self.above_handler.i_updated.wait()
-            print 'Above handler updated!' , self.row_num, self.i
-        else:
-            print 'Waiting for above or below to update...' , self.row_num, self.i
-            OrEvent(self.above_handler.i_updated, self.below_handler.i_updated).wait()
-            print 'Below or Above handler updated!' , self.row_num, self.i
-        self.go()
+                if self.above_handler is None:
+                    self.above_handler.in_loop.wait()
+                    self.above_handler.in_loop.set()
+                if self.below_handler is None:
+                    self.below_handler.in_loop.wait()
+                    self.below_handler.in_loop.set()
+                else:
+                    OrEvent(self.below_handler.in_loop, self.above_handler.in_loop)
+
+                # Do stuff
+                filtering.median_3x3_row(self.tmpA, self.tmpB, self.row_num)
+                # Swap tmpA and tmpB; doesn't recreate arrays, just swaps pointers!
+                potatoA = self.tmpA
+                potatoB = self.tmpB
+
+                self.tmpA = potatoB
+                self.tmpB = potatoA
+
+                if self.above_handler is not None:
+                    self.above_handler.in_loop.clear()
+                self.in_loop.clear() # We are in the loop! Solve deadlocks.
+                if self.below_handler is not None:
+                    self.below_handler.in_loop.clear()
+
+                # Give other threads a chance to grab locks and update
+                self.i += 1
+                self.i_updated.set()
+                self.i_updated.clear()
+
+                if self.i == self.num_iterations:
+                    break
+
+            # Try to go if you neighbors are updated...
+            if self.above_handler is None:
+                print_lock.acquire()
+                print 'Waiting for below handler to update...' , self.row_num, self.i
+                print_lock.release()
+                self.below_handler.i_updated.wait()
+                print_lock.acquire()
+                print 'Below handler updated!' , self.row_num, self.i
+                print_lock.release()
+            elif self.below_handler is None:
+                print_lock.acquire()
+                print 'Waiting for above handler to update...' , self.row_num, self.i
+                print_lock.release()
+                self.above_handler.i_updated.wait()
+                print_lock.acquire()
+                print 'Above handler updated!' , self.row_num, self.i
+                print_lock.release()
+            else:
+                print_lock.acquire()
+                print 'Waiting for above or below to update...' , self.row_num, self.i
+                print_lock.release()
+                OrEvent(self.above_handler.i_updated, self.below_handler.i_updated).wait()
+                print_lock.acquire()
+                print 'Below or Above handler updated!' , self.row_num, self.i
+                print_lock.release()
 
 def py_median_3x3(image, iterations=10, num_threads=1):
     ''' repeatedly filter with a 3x3 median '''
