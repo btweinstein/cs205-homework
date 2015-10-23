@@ -36,7 +36,7 @@ class Row_Handler():
         self.num_iterations = num_iterations
 
 
-    def go(self):
+    def go(self): #
         print 'Go!' , self.row_num, self.i
         go_cond_1 = True
         if self.above_handler is not None:
@@ -52,7 +52,7 @@ class Row_Handler():
             self.in_loop.set() # We are in the loop! Solve deadlocks.
             if self.below_handler is not None:
                 self.below_handler.in_loop.wait()
-                self.above_handler.in_loop.set()
+                self.below_handler.in_loop.set()
 
             # Do stuff
             filtering.median_3x3_row(self.tmpA, self.tmpB, self.row_num)
@@ -63,22 +63,24 @@ class Row_Handler():
             self.tmpA = potatoB
             self.tmpB = potatoA
 
-            self.i += 1
-
             if self.above_handler is not None:
                 self.above_handler.in_loop.clear()
             self.in_loop.clear() # We are in the loop! Solve deadlocks.
             if self.below_handler is not None:
-                self.above_handler.in_loop.clear()
+                self.below_handler.in_loop.clear()
 
             # Give other threads a chance to grab locks and update
+            self.i += 1
             self.i_updated.set()
             self.i_updated.clear()
-        elif self.i != self.num_iterations: # you are not done yet!
+
+        if self.i != self.num_iterations: # you are not done yet!
             self.wait()
 
     def wait(self):
         """Wait until one of your neighbors updates their iteration"""
+
+        # Try to go if you neighbors are updated...
         if self.above_handler is None:
             print 'Waiting for below handler to update...' , self.row_num, self.i
             self.below_handler.i_updated.wait()
