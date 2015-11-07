@@ -7,20 +7,13 @@ __kernel void sum_coalesced(__global float* x,
     int k = get_global_size(0);
     int i = get_global_id(0);
 
-    // thread i (i.e., with i = get_global_id()) should add x[i],
-    // x[i + get_global_size()], ... up to N-1, and store in sum.
-    int zmax = (N -i)/k - 1;
-
-    /*
-    printf("N: %d\n", N);
-    printf("i: %d\n", i);
-    printf("k: %d\n", k);
-    printf("zmax: %d\n", zmax);
-    */
+    int max_index = N - 1;
+    int space_to_jump = max_index - i;
+    int num_jumps = space_to_jump/k;
 
     float sum = 0;
-    for (int z=0; z < zmax; z++) { // YOUR CODE HERE
-        //if (i+z*k >= N) printf("Out of bounds!");
+    for (int z=0; z < num_jumps; z++) { // YOUR CODE HERE
+        if(i+z*k >= N) printf("Failure");
         sum += x[i + z*k];
     }
 
@@ -39,9 +32,9 @@ __kernel void sum_coalesced(__global float* x,
     uint local_size = get_local_size(0);
     uint max_j = (uint) log2((double) local_size);
 
-    for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
-        uint offset = local_size >> j;
-        if (local_id < i + offset) fast[i] += fast[i + offset];
+    for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE6
+        uint offset = (local_size >> j);
+        if (local_id < offset) fast[local_id] += fast[local_id + offset];
     }
 
     if (local_id == 0) partial[get_group_id(0)] = fast[0];
