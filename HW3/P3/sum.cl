@@ -32,9 +32,12 @@ __kernel void sum_coalesced(__global float* x,
     uint local_size = get_local_size(0);
     uint max_j = (uint) log2((double) local_size);
 
-    for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE6
+    for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
         uint offset = (local_size >> j);
-        if (local_id < offset) fast[local_id] += fast[local_id + offset];
+        if (local_id < offset){
+            fast[local_id] += fast[local_id + offset];
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
     }
 
     if (local_id == 0) partial[get_group_id(0)] = fast[0];
