@@ -9,9 +9,18 @@ __kernel void sum_coalesced(__global float* x,
 
     // thread i (i.e., with i = get_global_id()) should add x[i],
     // x[i + get_global_size()], ... up to N-1, and store in sum.
-    int zmax = (N-i)/k;
+    int zmax = (N -i)/k - 1;
+
+    /*
+    printf("N: %d\n", N);
+    printf("i: %d\n", i);
+    printf("k: %d\n", k);
+    printf("zmax: %d\n", zmax);
+    */
+
     float sum = 0;
     for (int z=0; z < zmax; z++) { // YOUR CODE HERE
+        //if (i+z*k >= N) printf("Out of bounds!");
         sum += x[i + z*k];
     }
 
@@ -29,8 +38,10 @@ __kernel void sum_coalesced(__global float* x,
     // See http://www.nehalemlabs.net/prototype/blog/2014/06/16/parallel-programming-with-opencl-and-python-parallel-reduce/
     uint local_size = get_local_size(0);
     uint max_j = (uint) log2((double) local_size);
+
     for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
-        fast[i] += fast[i + (local_size >> j)];
+        uint offset = local_size >> j;
+        if (local_id < i + offset) fast[i] += fast[i + offset];
     }
 
     if (local_id == 0) partial[get_group_id(0)] = fast[0];
