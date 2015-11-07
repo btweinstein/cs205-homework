@@ -25,6 +25,7 @@ if __name__ == "__main__":
 
     times = {}
 
+    print 'Working on coalesced task...'
     for num_workgroups in 2 ** np.arange(3, 10):
         partial_sums = cl.Buffer(ctx, cl.mem_flags.READ_WRITE, 4 * num_workgroups)
         host_partial = np.empty(num_workgroups).astype(np.float32)
@@ -42,6 +43,7 @@ if __name__ == "__main__":
             print("coalesced reads, workgroups: {}, num_workers: {}, {} seconds".
                   format(num_workgroups, num_workers, seconds))
 
+    print 'Working on blocked task...'
     for num_workgroups in 2 ** np.arange(3, 10):
         partial_sums = cl.Buffer(ctx, cl.mem_flags.READ_WRITE, 4 * num_workgroups)
         host_partial = np.empty(num_workgroups).astype(np.float32)

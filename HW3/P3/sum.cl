@@ -7,15 +7,24 @@ __kernel void sum_coalesced(__global float* x,
     int k = get_global_size(0);
     int i = get_global_id(0);
 
-    int max_index = N - 1;
+    int max_index = N-1;
     int space_to_jump = max_index - i;
     int num_jumps = space_to_jump/k;
 
+    // thread i (i.e., with i = get_global_id()) should add x[i],
+    // x[i + get_global_size()], ... up to N-1, and store in sum.
     float sum = 0;
-    for (int z=0; z < num_jumps; z++) { // YOUR CODE HERE
-        if(i+z*k >= N) printf("Failure");
-        sum += x[i + z*k];
+    int count = 0;
+    while (true){
+        int cur_index = i + count*k;
+        if (cur_index >= N) break;
+        sum += x[cur_index];
+        count += 1;
     }
+    /*
+    for (int z=0; z < num_jumps; z++) { // YOUR CODE HERE
+        sum += x[i + z*k];
+    }*/
 
     fast[local_id] = sum;
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -39,7 +48,6 @@ __kernel void sum_coalesced(__global float* x,
         }
         barrier(CLK_LOCAL_MEM_FENCE);
     }
-
     if (local_id == 0) partial[get_group_id(0)] = fast[0];
 }
 
