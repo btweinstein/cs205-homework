@@ -22,23 +22,24 @@ __kernel void sum_coalesced(__global float* x,
     //
     // thread i should sum fast[i] and fast[i + offset] and store back
     // in fast[i], for offset = (local_size >> j) for j from 1 to
-    // log_2(local_size)
+    // log_2(local_size) WTF lol
     //
     // You can assume get_local_size(0) is a power of 2.
     //
     // See http://www.nehalemlabs.net/prototype/blog/2014/06/16/parallel-programming-with-opencl-and-python-parallel-reduce/
+    
     for (;;) { // YOUR CODE HERE
         ; // YOUR CODE HERE
     }
 
-    if (local_id == 0) partial[get_group_id(0)] = fast[0];
+    if (local_id == 0) partial[get_group_id(0)] = fast[0];}
 
 
-    __kernel void sum_blocked} (__global float* x,
+__kernel void sum_blocked (__global float* x,
                                 __global float* partial,
                                 __local  float* fast,
                                 long N)
-    {
+{
         float sum = 0;
         size_t local_id = get_local_id(0);
         int k = ceil((float)N / get_global_size(0));
