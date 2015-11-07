@@ -27,18 +27,20 @@ __kernel void sum_coalesced(__global float* x,
     // You can assume get_local_size(0) is a power of 2.
     //
     // See http://www.nehalemlabs.net/prototype/blog/2014/06/16/parallel-programming-with-opencl-and-python-parallel-reduce/
-    
-    for (;;) { // YOUR CODE HERE
-        ; // YOUR CODE HERE
+    uint local_size = get_local_size(0);
+    uint max_j = (uint) log2((double) local_size);
+    for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
+        fast[i] += fast[i + (local_size >> j)];
     }
 
-    if (local_id == 0) partial[get_group_id(0)] = fast[0];}
+    if (local_id == 0) partial[get_group_id(0)] = fast[0];
+}
 
 
-__kernel void sum_blocked (__global float* x,
-                                __global float* partial,
-                                __local  float* fast,
-                                long N)
+__kernel void sum_blocked(__global float* x,
+                          __global float* partial,
+			              __local  float* fast,
+			              long N)
 {
         float sum = 0;
         size_t local_id = get_local_id(0);
