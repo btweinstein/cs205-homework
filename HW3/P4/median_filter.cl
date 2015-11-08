@@ -94,6 +94,6 @@ median_3x3(__global __read_only float *in_values,
     // back its 3x3 neighborhood median.
 
     if((x < w) && (y < h)){
-        out_values[x, y] = median_result;
+        out_values[y * w + x] = median_result;
     }
 }
