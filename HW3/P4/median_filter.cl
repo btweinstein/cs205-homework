@@ -6,7 +6,7 @@ inline float FETCH(__global float *in_values, int w, int h, int xglobal, int ygl
     if (xglobal >= w) xglobal = w - 1;
     if (yglobal >= h) yglobal = h - 1;
 
-    return in_values[xglobal, yglobal];
+    return in_values[yglobal * w + xglobal];
 }
 
 // 3x3 median filter
