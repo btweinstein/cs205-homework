@@ -70,10 +70,8 @@ __kernel void sum_blocked(__global float* x,
     // Be careful that each thread stays in bounds, both relative to
     // size of x (i.e., N), and the range it's assigned to sum.
 
-    int L = N/k;
-
     float sum = 0;
-    for (int z = L*i; z < L*(i+1); z++) { // YOUR CODE HERE
+    for (int z = i*k; z < (i+1)*k; z++) { // YOUR CODE HERE
         if (z < N) sum += x[z];
     }
 
