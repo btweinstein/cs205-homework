@@ -4,6 +4,9 @@ import numpy as np
 import pylab
 import os.path
 
+import os
+os.environ['PYOPENCL_COMPILER_OUTPUT'] = '1'
+
 def round_up(global_size, group_size):
     r = global_size % group_size
     if r == 0:
