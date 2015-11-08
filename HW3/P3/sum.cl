@@ -3,29 +3,17 @@ __kernel void sum_coalesced(__global float* x,
                             __local  float* fast,
                             long N)
 {
+
     size_t local_id = get_local_id(0);
     int k = get_global_size(0);
     int i = get_global_id(0);
 
-    int max_index = N-1;
-    int space_to_jump = max_index - i;
-    int num_jumps = space_to_jump/k;
+    int num_jumps = (N-1-i)/k;
 
-    // thread i (i.e., with i = get_global_id()) should add x[i],
-    // x[i + get_global_size()], ... up to N-1, and store in sum.
     float sum = 0;
-    int count = 0;
-    while (true){
-        int cur_index = i + count*k;
-        if (cur_index >= N) break;
-        sum += x[cur_index];
-        count += 1;
-    }
-    /*
-    for (int z=0; z < num_jumps; z++) { // YOUR CODE HERE
+    for (int z=0; z <= num_jumps; z++) { // YOUR CODE HERE
         sum += x[i + z*k];
-    }*/
-
+    }
     fast[local_id] = sum;
     barrier(CLK_LOCAL_MEM_FENCE);
 
