@@ -1,0 +1,10 @@
+### Laptop ###
+
+Intel(R) Core(TM) i7-3537U CPU @ 2.00GHz on Intel(R) OpenCL
+configuration ('blocked', 128, 4): 0.005328328 seconds
+
+The time here was basically independent of the number of workgroups;
+the key value was the number of workers; 4 was the magic number.
+As long as there were 4 workers, the code went very fast, i.e. plus
+or minus 0.001 from the fastest time. Otherwise, the code was
+about 10 times slower.
