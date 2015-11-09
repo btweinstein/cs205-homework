@@ -26,5 +26,5 @@ coalesced reads, workgroups: 512, num_workers: 64, 0.000421888 seconds
 coalesced reads, workgroups: 512, num_workers: 128, 0.000261856 seconds
 
 The blocked reads are always much slower. The reads must not be coalesced in this case, vastly slowing down the code.
-It looks like my GPU works best when I have many workgroups which are a multiple of 2^N and
+It looks like my GPU works best when I have many workgroups which are a multiple of 32^N and
 the maximum number of workers per workgroup.
