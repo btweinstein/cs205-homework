@@ -8,6 +8,8 @@ __kernel void sum_coalesced(__global float* x,
     int k = get_global_size(0);
     int i = get_global_id(0);
 
+    if (get_local_id(0) == 0) printf("%d\n", k);
+
     int num_jumps = (N-1-i)/k;
 
     float sum = 0;
