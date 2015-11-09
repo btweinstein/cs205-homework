@@ -71,19 +71,18 @@ median_3x3(__global __read_only float *in_values,
      the local memory, however, or else things would not work when other threads
      tried to access it.*/
 
-    const int LS0 = get_local_size(0);
-    const int LS1 = get_local_size(1);
+    //We need the width of the buffer
 
     // Get the pixels required to get median.
-    float top_left = buffer[idx_1D - LS1 - 1];
-    float top_middle = buffer[idx_1D - LS1];
-    float top_right = buffer[idx_1D  - LS1 + 1];
+    float top_left = buffer[idx_1D - buf_w - 1];
+    float top_middle = buffer[idx_1D - buf_w];
+    float top_right = buffer[idx_1D  - buf_w + 1];
     float left = buffer[idx_1D - 1];
     float middle = buffer[idx_1D];
     float right = buffer[idx_1D + 1];
-    float bottom_left = buffer[idx_1D + LS1 - 1];
-    float bottom_middle = buffer[idx_1D + LS1];
-    float bottom_right = buffer[idx_1D + LS1 + 1];
+    float bottom_left = buffer[idx_1D + buf_w - 1];
+    float bottom_middle = buffer[idx_1D + buf_w];
+    float bottom_right = buffer[idx_1D + buf_w + 1];
 
     float median_result = median9(top_left, top_middle, top_right,
                                   left, middle, right,
