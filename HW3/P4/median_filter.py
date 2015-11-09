@@ -1,8 +1,10 @@
 from __future__ import division
 import pyopencl as cl
 import numpy as np
-import pylab
 import os.path
+import matplotlib
+matplotlib.use('TKagg')
+import matplotlib.pyplot as plt
 
 import os
 os.environ['PYOPENCL_COMPILER_OUTPUT'] = '1'
@@ -58,6 +60,9 @@ if __name__ == '__main__':
     program = cl.Program(context, open('median_filter.cl').read()).build(options=['-I', curdir])
 
     host_image = np.load('image.npz')['image'].astype(np.float32)[::2, ::2].copy()
+
+    plt.imshow(host_image, cmap=plt.cm.gray)
+
     host_image_filtered = np.zeros_like(host_image)
 
     gpu_image_a = cl.Buffer(context, cl.mem_flags.READ_WRITE, host_image.size * 4)
@@ -79,8 +84,7 @@ if __name__ == '__main__':
     # Send image to the device, non-blocking
     cl.enqueue_copy(queue, gpu_image_a, host_image, is_blocking=False)
 
-    # num_iters = 10
-    num_iters=2
+    num_iters = 10
     for iter in range(num_iters):
         program.median_3x3(queue, global_size, local_size,
                            gpu_image_a, gpu_image_b, local_memory,
@@ -91,6 +95,13 @@ if __name__ == '__main__':
         gpu_image_a, gpu_image_b = gpu_image_b, gpu_image_a
 
     cl.enqueue_copy(queue, host_image_filtered, gpu_image_a, is_blocking=True)
-    print host_image_filtered
 
-    assert np.allclose(host_image_filtered, numpy_median(host_image, num_iters))
+    plt.figure()
+    plt.imshow(host_image_filtered, cmap=plt.cm.gray)
+    plt.show()
+
+    test_image = numpy_median(host_image, num_iters)
+
+    print 'Testing...'
+    assert np.allclose(host_image_filtered, test_image)
+    print 'Tests successfully passed!'

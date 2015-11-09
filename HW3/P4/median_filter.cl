@@ -74,15 +74,19 @@ median_3x3(__global __read_only float *in_values,
     //We need the width of the buffer
 
     // Get the pixels required to get median.
-    float top_left = buffer[idx_1D - buf_w - 1];
-    float top_middle = buffer[idx_1D - buf_w];
-    float top_right = buffer[idx_1D  - buf_w + 1];
-    float left = buffer[idx_1D - 1];
-    float middle = buffer[idx_1D];
-    float right = buffer[idx_1D + 1];
-    float bottom_left = buffer[idx_1D + buf_w - 1];
-    float bottom_middle = buffer[idx_1D + buf_w];
-    float bottom_right = buffer[idx_1D + buf_w + 1];
+
+    int my_row_buffer = ly + halo;
+    int my_col_buffer = lx + halo;
+
+    float top_left = buffer[(my_row_buffer - 1)*buf_w + (my_col_buffer - 1)];
+    float top_middle = buffer[(my_row_buffer - 1)*buf_w + (my_col_buffer)];
+    float top_right = buffer[(my_row_buffer - 1)*buf_w + (my_col_buffer + 1)];
+    float left = buffer[(my_row_buffer)*buf_w + (my_col_buffer - 1)];
+    float middle = buffer[my_row_buffer*buf_w + my_col_buffer];
+    float right = buffer[(my_row_buffer)*buf_w + (my_col_buffer + 1)];
+    float bottom_left = buffer[(my_row_buffer + 1)*buf_w + (my_col_buffer - 1)];
+    float bottom_middle = buffer[(my_row_buffer + 1)*buf_w + (my_col_buffer)];
+    float bottom_right = buffer[(my_row_buffer + 1)*buf_w + (my_col_buffer + 1)];
 
     float median_result = median9(top_left, top_middle, top_right,
                                   left, middle, right,
