@@ -8,12 +8,7 @@ __kernel void sum_coalesced(__global float* x,
     int k = get_global_size(0);
     int i = get_global_id(0);
 
-    //if (get_local_id(0) == 0) printf("%d\n", k);
-
     int num_jumps = (N-1-i)/k;
-
-    //if (get_local_id(0) == 0) printf("%d\n", num_jumps);
-
 
     float sum = 0;
     for (int z=0; z <= num_jumps; z++) { // YOUR CODE HERE
@@ -33,8 +28,6 @@ __kernel void sum_coalesced(__global float* x,
     // See http://www.nehalemlabs.net/prototype/blog/2014/06/16/parallel-programming-with-opencl-and-python-parallel-reduce/
     uint local_size = get_local_size(0);
     uint max_j = (uint) log2((float) local_size);
-
-    if (get_local_id(0) == 0) printf("%d\n", max_j);
 
     for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
         uint offset = (local_size >> j);
@@ -83,7 +76,7 @@ __kernel void sum_blocked(__global float* x,
     //
     // See http://www.nehalemlabs.net/prototype/blog/2014/06/16/parallel-programming-with-opencl-and-python-parallel-reduce/
     uint local_size = get_local_size(0);
-    uint max_j = (uint) log2((double) local_size);
+    uint max_j = (uint) log2((float) local_size);
 
     for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
         uint offset = (local_size >> j);
