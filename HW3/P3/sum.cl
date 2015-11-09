@@ -27,12 +27,9 @@ __kernel void sum_coalesced(__global float* x,
     //
     // See http://www.nehalemlabs.net/prototype/blog/2014/06/16/parallel-programming-with-opencl-and-python-parallel-reduce/
     uint local_size = get_local_size(0);
-    uint max_j = (uint) log2((float) local_size);
-
-    for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
-        uint offset = (local_size >> j);
-        if (local_id < offset){
-            fast[local_id] += fast[local_id + offset];
+    for (uint s=local_size/2; s > 0; s >>=1) { // YOUR CODE HERE
+        if (local_id < s){
+            fast[local_id] += fast[local_id + s];
         }
         barrier(CLK_LOCAL_MEM_FENCE);
     }
@@ -76,12 +73,9 @@ __kernel void sum_blocked(__global float* x,
     //
     // See http://www.nehalemlabs.net/prototype/blog/2014/06/16/parallel-programming-with-opencl-and-python-parallel-reduce/
     uint local_size = get_local_size(0);
-    uint max_j = (uint) log2((float) local_size);
-
-    for (uint j=1;j <= max_j; j++) { // YOUR CODE HERE
-        uint offset = (local_size >> j);
-        if (local_id < offset){
-            fast[local_id] += fast[local_id + offset];
+    for (uint s=local_size/2; s > 0; s >>=1) { // YOUR CODE HERE
+        if (local_id < s){
+            fast[local_id] += fast[local_id + s];
         }
         barrier(CLK_LOCAL_MEM_FENCE);
     }
