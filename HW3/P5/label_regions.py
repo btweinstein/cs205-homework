@@ -77,6 +77,8 @@ if __name__ == '__main__':
 
     # Show the initial labels
     cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
+    print np.min(host_labels)
+    print np.max(host_labels)
     pylab.imshow(host_labels)
     pylab.title(itercount)
     pylab.show()
@@ -105,7 +107,7 @@ if __name__ == '__main__':
             break
         # there were changes, so continue running
         print host_done_flag
-        if itercount % 1 == 0 and show_progress:
+        if itercount % 100 == 0 and show_progress:
             cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
             pylab.imshow(host_labels)
             pylab.title(itercount)

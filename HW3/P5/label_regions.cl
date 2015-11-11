@@ -1,3 +1,5 @@
+#include <limits.h>
+
 __kernel void
 initialize_labels(__global __read_only int *image,
                   __global __write_only int *labels,
@@ -80,24 +82,30 @@ propagate_labels(__global __read_write int *labels,
     old_label = buffer[buf_y * buf_w + buf_x];
 
     // CODE FOR PARTS 2 and 4 HERE (part 4 will replace part 2)
-    
-    // stay in bounds
-    if ((x < w) && (y < h)) {
+
+    int max_index = w*h; // Anything greater than this is background
+
+    // stay in bounds, don't update the walls.
+    if ((x < w) && (y < h) && (old_label < max_index)) {
         // CODE FOR PART 1 HERE
 
         // Get the labels of your 4 neighboring pixels
-        float top_middle = buffer[(buf_y - 1)*buf_w + (buf_x)];
+        int top = buffer[(buf_y - 1)*buf_w + (buf_x)];
+        int left = buffer[(buf_y)*buf_w + (buf_x - 1)];
+        int middle = buffer[buf_y*buf_w + buf_x];
+        int right = buffer[(buf_y)*buf_w + (buf_x + 1)];
+        int bottom = buffer[(buf_y + 1)*buf_w + (buf_x)];
 
-        float left = buffer[(buf_y)*buf_w + (buf_x - 1)];
-        float middle = buffer[buf_y*buf_w + buf_x];
-        float right = buffer[(buf_y)*buf_w + (buf_x + 1)];
-        float bottom_middle = buffer[(buf_y + 1)*buf_w + (buf_x)];
+        //Create an array of the neighbors
+        int all_labels[5] = {top, left, middle, right, bottom};
+        int new_label = max_index;
 
-        float new_label = -1;
-        if (new_label > left) new_label = left;
-        if (new_label > middle) new_label = middle;
-        if (new_label > right) new_label = right;
-        if (new_label > bottom_middle) new_label = bottom_middle;
+        for(int i = 0; i < 5; i++){
+            int cur_label = all_labels[i];
+            if(cur_label < new_label){
+                new_label = cur_label;
+            }
+        }
 
         if (new_label != old_label) {
             // CODE FOR PART 3 HERE
