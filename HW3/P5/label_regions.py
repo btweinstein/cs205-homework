@@ -2,6 +2,8 @@ from __future__ import division
 import sys
 import pyopencl as cl
 import numpy as np
+import matplotlib
+matplotlib.use('TKagg')
 import pylab
 
 def round_up(global_size, group_size):
@@ -103,7 +105,7 @@ if __name__ == '__main__':
             break
         # there were changes, so continue running
         print host_done_flag
-        if itercount % 100 == 0 and show_progress:
+        if itercount % 1 == 0 and show_progress:
             cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
             pylab.imshow(host_labels)
             pylab.title(itercount)
