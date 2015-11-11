@@ -91,10 +91,20 @@ propagate_labels(__global __read_write int *labels,
         float left = buffer[(buf_y)*buf_w + (buf_x - 1)];
         float middle = buffer[buf_y*buf_w + buf_x];
         float right = buffer[(buf_y)*buf_w + (buf_x + 1)];
-        float bottom_middle = buffer[(buf_y + 1)*buf_w + (buf_x)];
+        float bottom = buffer[(buf_y + 1)*buf_w + (buf_x)];
 
-        float new_label = -1;
-        if (new_label > left) new_label = left;
+        float
+        //Set the label to a nonzero value if possible...else return zero
+        if ((left != 0) || (middle !=0) || (right !=0) || (bottom != 0)){
+        }
+        else{
+            new_label = 0
+        }
+        float new_label;
+        if (top_middle != 0) new_label = top_middle
+
+        float new_label = 0;
+        if ((new_label > left) && (left != 0)) new_label = left;
         if (new_label > middle) new_label = middle;
         if (new_label > right) new_label = right;
         if (new_label > bottom_middle) new_label = bottom_middle;
