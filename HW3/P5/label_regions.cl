@@ -1,5 +1,3 @@
-#include <limits.h>
-
 __kernel void
 initialize_labels(__global __read_only int *image,
                   __global __write_only int *labels,
