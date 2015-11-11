@@ -84,6 +84,14 @@ propagate_labels(__global __read_write int *labels,
     // stay in bounds
     if ((x < w) && (y < h)) {
         // CODE FOR PART 1 HERE
+
+        // Get the labels of your 4 neighboring pixels
+        float top_middle = buffer[(my_row_buffer - 1)*buf_w + (my_col_buffer)];
+        float left = buffer[(my_row_buffer)*buf_w + (my_col_buffer - 1)];
+        float middle = buffer[my_row_buffer*buf_w + my_col_buffer];
+        float right = buffer[(my_row_buffer)*buf_w + (my_col_buffer + 1)];
+        float bottom_middle = buffer[(my_row_buffer + 1)*buf_w + (my_col_buffer)];
+
         // We set new_label to the value of old_label, but you will need
         // to adjust this for correctness.
         new_label = old_label;
