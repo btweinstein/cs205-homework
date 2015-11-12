@@ -33,7 +33,8 @@ propagate_labels(__global __read_write int *labels,
                  __local int *buffer,
                  int w, int h,
                  int buf_w, int buf_h,
-                 const int halo)
+                 const int halo,
+                 __local int* min_label)
 {
     // halo is the additional number of cells in one direction
 
@@ -124,8 +125,13 @@ propagate_labels(__global __read_write int *labels,
             // CODE FOR PART 3 HERE
             // indicate there was a change this iteration.
             // multiple threads might write this.
+
+            min_label = new_label;
+
+            labels[old_label] = atomic_min(min_label, old_label);
+
             *(changed_flag) += 1;
-            labels[y * w + x] = new_label;
+            labels[y * w + x] = atomic_min(min_label, old_label);
         }
     }
 }

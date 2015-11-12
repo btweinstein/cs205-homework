@@ -89,6 +89,9 @@ if __name__ == '__main__':
 
     print 'Background value:' , host_labels.shape[0]*host_labels.shape[1]
 
+    # Create a min label queue
+    min_label = cl.Buffer(context, cl.mem_flags.READ_WRITE, 4)
+
     while True:
         itercount += 1
         host_done_flag[0] = 0
@@ -99,7 +102,7 @@ if __name__ == '__main__':
                                              gpu_local_memory,
                                              width, height,
                                              buf_size[0], buf_size[1],
-                                             halo)
+                                             halo, min_label)
         prop_exec.wait()
         elapsed = 1e-6 * (prop_exec.profile.end - prop_exec.profile.start)
         total_time += elapsed
