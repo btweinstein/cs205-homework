@@ -77,8 +77,6 @@ if __name__ == '__main__':
 
     # Show the initial labels
     cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
-    print np.min(host_labels)
-    print np.max(host_labels)
     pylab.imshow(host_labels)
     pylab.title(itercount)
     pylab.show()

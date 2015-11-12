@@ -81,13 +81,13 @@ propagate_labels(__global __read_write int *labels,
 
     // CODE FOR PARTS 2 and 4 HERE (part 4 will replace part 2)
 
-    // Change core values in the buffer to grandparents
-    for(int cur_buf_x = halo; cur_buf_x < buf_w - halo; cur_buf_x++){
-        for(int cur_buf_y = halo; cur_buf_y < buf_h - halo; cur_buf_y++){
-            int cur_index = cur_buf_y*buf_w + cur_buf_x;
+    // Change core values in the buffer to grandparents. But, be careful,
+    // you don't want to do this multiple times...and only update core values.
+    if ((idx_1D < buf_w - halo) && (idx_1D > halo)) {
+        for (int row = halo; row < buf_h - halo; row++) {
+            int cur_index = row * buf_w + idx_1D;
             int grandparent = buffer[cur_index];
-            // Replace label with its grandparent's label
-            buffer[cur_index] = buffer[grandparent];
+            buffer[cur_index] = labels[grandparent];
         }
     }
 
