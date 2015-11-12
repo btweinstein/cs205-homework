@@ -87,6 +87,8 @@ if __name__ == '__main__':
     show_progress = True
     total_time = 0
 
+    print 'Background value:' , host_labels.shape[0]*host_labels.shape[1]
+
     while True:
         itercount += 1
         host_done_flag[0] = 0

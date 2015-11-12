@@ -81,19 +81,23 @@ propagate_labels(__global __read_write int *labels,
 
     // CODE FOR PARTS 2 and 4 HERE (part 4 will replace part 2)
 
+    int max_index = w*h; // Anything greater than this is background
+
     // Change core values in the buffer to grandparents. But, be careful,
     // you don't want to do this multiple times...and only update core values.
-    if ((idx_1D < buf_w - halo) && (idx_1D > halo)) {
+    // Do not change the index to the max index though.
+    if ((idx_1D < buf_w - halo) && (idx_1D >= halo)) {
         for (int row = halo; row < buf_h - halo; row++) {
             int cur_index = row * buf_w + idx_1D;
             int grandparent = buffer[cur_index];
-            buffer[cur_index] = labels[grandparent];
+            if (grandparent != max_index){
+                buffer[cur_index] = labels[grandparent];
+            }
         }
     }
 
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    int max_index = w*h; // Anything greater than this is background
     // stay in bounds, don't update the walls.
     if ((x < w) && (y < h) && (old_label < max_index)) {
         // CODE FOR PART 1 HERE
