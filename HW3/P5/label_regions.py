@@ -89,6 +89,8 @@ if __name__ == '__main__':
 
     print 'Background value:' , host_labels.shape[0]*host_labels.shape[1]
 
+    print np.sum(host_labels == host_labels.shape[0]*host_labels.shape[1])
+
     while True:
         itercount += 1
         host_done_flag[0] = 0
@@ -105,12 +107,16 @@ if __name__ == '__main__':
         total_time += elapsed
         # read back done flag, block until it gets here
         cl.enqueue_copy(queue, host_done_flag, gpu_done_flag, is_blocking=True)
+
+        cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
+        print np.sum(host_labels == host_labels.shape[0]*host_labels.shape[1])
+
         if host_done_flag[0] == 0:
             # no changes
             break
         # there were changes, so continue running
         print host_done_flag
-        if itercount % 100 == 0 and show_progress:
+        if itercount % 1 == 0 and show_progress:
             cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
             pylab.imshow(host_labels)
             pylab.title(itercount)

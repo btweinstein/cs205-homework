@@ -35,6 +35,7 @@ propagate_labels(__global __read_write int *labels,
                  int buf_w, int buf_h,
                  const int halo)
 {
+
     // halo is the additional number of cells in one direction
 
     // Global position of output pixel
@@ -101,9 +102,9 @@ propagate_labels(__global __read_write int *labels,
     // but we'll see what happens.
     int LS0 = get_local_size(0);
     int LS1 = get_local_size(1);
-
-    if ((lx==0) && (ly==0)){
+    if ((lx==LS0-1) && (ly==LS1-1)){
         // We need two for loops...yuck.
+        printf("%d %d \n", get_group_id(0), get_group_id(1));
         int previous_parent = -1;
         int grandparent = -1;
         for(int cur_lx=0; cur_lx<LS0; cur_lx++){
@@ -111,6 +112,7 @@ propagate_labels(__global __read_write int *labels,
                 int cur_buf_x = cur_lx + halo;
                 int cur_buf_y = cur_ly + halo;
                 int cur_buf_index = cur_buf_y*buf_w + cur_buf_x;
+
                 int parent = buffer[cur_buf_index];
                 if (parent < max_index){
                     if (parent != previous_parent){
@@ -122,8 +124,7 @@ propagate_labels(__global __read_write int *labels,
             }
         }
     }
-
-    barrier(CLK_LOCAL_MEM_FENCE);
+     barrier(CLK_LOCAL_MEM_FENCE);
 
     // stay in bounds, don't update the walls.
     if ((x < w) && (y < h) && (old_label < max_index)) {
