@@ -86,14 +86,13 @@ propagate_labels(__global __read_write int *labels,
     // Change core values in the buffer to grandparents. But, be careful,
     // you don't want to do this multiple times...and only update core values.
     // Do not change the index to the max index though.
-    if ((idx_1D < buf_w - halo) && (idx_1D >= halo)) {
-        for (int row = halo; row < buf_h - halo; row++) {
-            int cur_index = row * buf_w + idx_1D;
-            int grandparent = buffer[cur_index];
-            if (grandparent != max_index){
-                buffer[cur_index] = labels[grandparent];
-            }
-        }
+
+    //Get the value in the buffer corresponding to your core value
+    int cur_buf_index = buf_y*buf_w + buf_x;
+    int parent = buffer[cur_buf_index];
+    if (parent < max_index){
+        int grandparent = labels[parent];
+        buffer[cur_buf_index] = grandparent;
     }
 
     barrier(CLK_LOCAL_MEM_FENCE);
