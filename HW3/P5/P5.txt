@@ -42,9 +42,10 @@ Found 35 regions
 # Part 4
 
 ## Maze 1
-Finished after 568 iterations, 325.81164 ms total, 0.573612042254 ms per iteration
+Finished after 8 iterations, 8.779498 ms total, 1.09743725 ms per iteration
 Found 2 regions
 
 ## Maze 2
-Finished after 238 iterations, 102.025011 ms total, 0.428676516807 ms per iteration
-Found 35 regions
+Finished after 8 iterations, 5.449567 ms total, 0.681195875 ms per iteration
+
+There didn't seem to be much of a difference on my CPU. #TODO Figure out why this works...and if it will help.

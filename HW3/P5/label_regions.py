@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     program = cl.Program(context, open('label_regions.cl').read()).build(options='')
 
-    host_image = np.load('maze1.npy')
+    host_image = np.load('maze2.npy')
     host_labels = np.empty_like(host_image)
     host_done_flag = np.zeros(1).astype(np.int32)
 
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
     print 'Background value:' , host_labels.shape[0]*host_labels.shape[1]
 
-    print np.sum(host_labels == host_labels.shape[0]*host_labels.shape[1])
+    #print np.sum(host_labels == host_labels.shape[0]*host_labels.shape[1])
 
     while True:
         itercount += 1
@@ -108,15 +108,15 @@ if __name__ == '__main__':
         # read back done flag, block until it gets here
         cl.enqueue_copy(queue, host_done_flag, gpu_done_flag, is_blocking=True)
 
-        cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
-        print np.sum(host_labels == host_labels.shape[0]*host_labels.shape[1])
+        #cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
+        #print np.sum(host_labels == host_labels.shape[0]*host_labels.shape[1])
 
         if host_done_flag[0] == 0:
             # no changes
             break
         # there were changes, so continue running
         print host_done_flag
-        if itercount % 1 == 0 and show_progress:
+        if itercount % 100 == 0 and show_progress:
             cl.enqueue_copy(queue, host_labels, gpu_labels, is_blocking=True)
             pylab.imshow(host_labels)
             pylab.title(itercount)

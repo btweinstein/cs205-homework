@@ -104,7 +104,6 @@ propagate_labels(__global __read_write int *labels,
     int LS1 = get_local_size(1);
     if ((lx==LS0-1) && (ly==LS1-1)){
         // We need two for loops...yuck.
-        printf("%d %d \n", get_group_id(0), get_group_id(1));
         int previous_parent = -1;
         int grandparent = -1;
         for(int cur_lx=0; cur_lx<LS0; cur_lx++){
