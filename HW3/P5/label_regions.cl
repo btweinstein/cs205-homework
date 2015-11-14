@@ -101,16 +101,16 @@ propagate_labels(__global __read_write int *labels,
     // but we'll see what happens.
     int LS0 = get_local_size(0);
     int LS1 = get_local_size(1);
+
     if ((lx==0) && (ly==0)){
         // We need two for loops...yuck.
         int previous_parent = -1;
         int grandparent = -1;
-        for(int cur_lx=0; cur_lx<LS0; cur_lx){
+        for(int cur_lx=0; cur_lx<LS0; cur_lx++){
             for(int cur_ly=0; cur_ly < LS1; cur_ly++){
                 int cur_buf_x = cur_lx + halo;
                 int cur_buf_y = cur_ly + halo;
                 int cur_buf_index = cur_buf_y*buf_w + cur_buf_x;
-                printf("%d\n", cur_buf_index);
                 int parent = buffer[cur_buf_index];
                 if (parent < max_index){
                     if (parent != previous_parent){
