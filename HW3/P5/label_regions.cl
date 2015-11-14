@@ -89,11 +89,34 @@ propagate_labels(__global __read_write int *labels,
 
     //Get the value in the buffer corresponding to your core value
     //No need for a loop, as we are always operating on core values.
-    int cur_buf_index = buf_y*buf_w + buf_x;
-    int parent = buffer[cur_buf_index];
-    if (parent < max_index){
-        int grandparent = labels[parent];
-        buffer[cur_buf_index] = grandparent;
+
+//    int cur_buf_index = buf_y*buf_w + buf_x;
+//    int parent = buffer[cur_buf_index];
+//    if (parent < max_index){
+//        int grandparent = labels[parent];
+//        buffer[cur_buf_index] = grandparent;
+//    }
+
+    // We now redo our previous code to use a single thread. This seems like a bad idea,
+    // but we'll see what happens.
+    if ((lx==0) && (ly==0)){
+        // We need two for loops...yuck.
+        int previous_parent = -1;
+        int grandparent = -1;
+
+        for(int cur_buf_y=halo; cur_buf_y < buf_h - halo; cur_buf_y++){
+            for(int cur_buf_x = halo; cur_buf_x < buf_w - halo; cur_buf_x++){
+                int cur_buf_index = cur_buf_y*buf_w + cur_buf_x;
+                int parent = buffer[cur_buf_index];
+                if (parent < max_index){
+                    if (parent != previous_parent){
+                        previous_parent = parent;
+                        grandparent = labels[parent];
+                    }
+                    buffer[cur_buf_index] = grandparent;
+                }
+            }
+        }
     }
 
     barrier(CLK_LOCAL_MEM_FENCE);
