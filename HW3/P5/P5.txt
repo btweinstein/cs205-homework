@@ -25,3 +25,18 @@ It looks like the number of iterations was basically cut in half. This makes sen
 if you look up your grandparents label, information can propagate at a rate of
 two pixels per iteration as opposed to one. This should halve the number
 of iterations.
+
+# Part 3
+
+# TODO: Recheck part 3 on the GPU, add discussion
+
+## Maze 1
+Finished after 8 iterations, 14.272517 ms total, 1.784064625 ms per iteration
+Found 2 regions
+
+
+## Maze 2
+Finished after 8 iterations, 4.974752 ms total, 0.621844 ms per iteration
+Found 35 regions
+
+# Part 4
