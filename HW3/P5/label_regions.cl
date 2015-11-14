@@ -88,6 +88,7 @@ propagate_labels(__global __read_write int *labels,
     // Do not change the index to the max index though.
 
     //Get the value in the buffer corresponding to your core value
+    //No need for a loop, as we are always operating on core values.
     int cur_buf_index = buf_y*buf_w + buf_x;
     int parent = buffer[cur_buf_index];
     if (parent < max_index){
