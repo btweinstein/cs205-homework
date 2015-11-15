@@ -102,7 +102,8 @@ propagate_labels(__global __read_write int *labels,
     // but we'll see what happens.
     int LS0 = get_local_size(0);
     int LS1 = get_local_size(1);
-    if ((lx==LS0-1) && (ly==LS1-1)){
+    barrier(CLK_LOCAL_MEM_FENCE);
+    if ((lx==0) && (ly==0)){
         // We need two for loops...yuck.
         int previous_parent = -1;
         int grandparent = -1;
