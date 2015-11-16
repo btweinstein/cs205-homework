@@ -1,3 +1,5 @@
+These were all tested on my GTX titan black GPU.
+
 # Part 1
 
 ## Maze 1
@@ -56,8 +58,8 @@ It still definitely works. It takes a couple more iterations, as the labels can 
 overwritten while updating, but it converges to the correct answer. For example,
 
 ## Maze 1
-Finished after 9 iterations, 8.389584 ms total, 0.932176 ms per iteration
-Found 2 regions
+Finished after 10 iterations, 1.089216 ms total, 0.1089216 ms per iteration
+Found 35 regions
 
 ## Maze 2
 Finished after 9 iterations, 5.204919 ms total, 0.578324333333 ms per iteration
