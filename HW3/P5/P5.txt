@@ -64,3 +64,5 @@ Found 35 regions
 ## Maze 2
 Finished after 9 iterations, 5.204919 ms total, 0.578324333333 ms per iteration
 Found 35 regions
+
+The number of iterations varies as well, somewhere between 8 and 12.
