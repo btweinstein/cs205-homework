@@ -153,7 +153,8 @@ propagate_labels(__global __read_write int *labels,
             // indicate there was a change this iteration.
             // multiple threads might write this.
             *(changed_flag) += 1;
-            //For part 3
+
+            //For part 3: using atomics
             //atomic_min(&labels[old_label], new_label);
             //atomic_min(&labels[y*w + x], labels[old_label]);
 
