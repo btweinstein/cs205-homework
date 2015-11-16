@@ -13,14 +13,12 @@ Found 35 regions
 
 # Part 2
 
-#TODO: Recheck part 2 on GPU
-
 ## Maze 1
-Finished after 529 iterations, 22.62528 ms total, 0.042769905482 ms per iteration
+Finished after 529 iterations, 16.9664 ms total, 0.0320725897921 ms per iteration
 Found 2 regions
 
 ## Maze 2
-Finished after 275 iterations, 11.682528 ms total, 0.04248192 ms per iteration
+Finished after 274 iterations, 8.630432 ms total, 0.0314979270073 ms per iteration
 Found 35 regions
 
 It looks like the number of iterations was basically cut in half. This makes sense;
@@ -30,27 +28,26 @@ of iterations.
 
 # Part 3
 
-# TODO: Recheck part 3 on the GPU, add discussion
-
 ## Maze 1
-Finished after 8 iterations, 14.272517 ms total, 1.784064625 ms per iteration
+Finished after 10 iterations, 0.386208 ms total, 0.0386208 ms per iteration
 Found 2 regions
 
-
 ## Maze 2
-Finished after 8 iterations, 4.974752 ms total, 0.621844 ms per iteration
+Finished after 9 iterations, 0.349952 ms total, 0.0388835555556 ms per iteration
 Found 35 regions
 
 # Part 4
 
 ## Maze 1
-Finished after 8 iterations, 8.779498 ms total, 1.09743725 ms per iteration
+Finished after 10 iterations, 1.091232 ms total, 0.1091232 ms per iteration
 Found 2 regions
 
 ## Maze 2
-Finished after 8 iterations, 5.449567 ms total, 0.681195875 ms per iteration
 
-There didn't seem to be much of a difference on my CPU. #TODO Figure out why this works...and if it will help.
+Finished after 9 iterations, 0.983008 ms total, 0.109223111111 ms per iteration
+Found 35 regions
+
+The number of iterations varies here as well.
 
 # Part 5
 
