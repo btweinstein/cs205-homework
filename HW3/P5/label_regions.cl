@@ -91,6 +91,7 @@ propagate_labels(__global __read_write int *labels,
     //Get the value in the buffer corresponding to your core value
     //No need for a loop, as we are always operating on core values.
 
+    // For part 2: not using a single thread
 //    int cur_buf_index = buf_y*buf_w + buf_x;
 //    int parent = buffer[cur_buf_index];
 //    if (parent < max_index){
@@ -99,7 +100,7 @@ propagate_labels(__global __read_write int *labels,
 //    }
 
     // We now redo our previous code to use a single thread. This seems like a bad idea,
-    // but we'll see what happens.
+    // but we'll see what happens. Part 2 with a single thread, basically.
     int LS0 = get_local_size(0);
     int LS1 = get_local_size(1);
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -149,10 +150,14 @@ propagate_labels(__global __read_write int *labels,
         }
 
         if (new_label != old_label) {
-            // CODE FOR PART 3 HERE
             // indicate there was a change this iteration.
             // multiple threads might write this.
             *(changed_flag) += 1;
+            //For part 3
+            //atomic_min(&labels[old_label], new_label);
+            //atomic_min(&labels[y*w + x], labels[old_label]);
+
+            //For part 5...do we need atomics?
             labels[old_label] = min(labels[old_label], new_label);
             labels[y*w + x] = min(labels[y*w+x], labels[old_label]);
         }
