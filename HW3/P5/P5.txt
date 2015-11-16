@@ -55,11 +55,11 @@ It still definitely works. It takes a couple more iterations, as the labels can 
 overwritten while updating, but it converges to the correct answer. For example,
 
 ## Maze 1
-Finished after 10 iterations, 1.089216 ms total, 0.1089216 ms per iteration
-Found 35 regions
+Finished after 11 iterations, 1.244192 ms total, 0.113108363636 ms per iteration
+Found 2 regions
 
 ## Maze 2
-Finished after 9 iterations, 5.204919 ms total, 0.578324333333 ms per iteration
+Finished after 10 iterations, 1.113504 ms total, 0.1113504 ms per iteration
 Found 35 regions
 
 The number of iterations varies as well, somewhere between 8 and 12.
