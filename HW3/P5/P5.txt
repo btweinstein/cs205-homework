@@ -88,9 +88,40 @@ alpha, i.e. caching more than one global value, or decrease the number of labels
 number of threads fixed (making Q^2/N smaller), the single thread could potentially win.
 
 # Part 5
+>>Explain what would happen if instead of using the atomic min() operation, one would use
+the min() function.
 
-It still definitely works. It takes a couple more iterations, as the labels can increase and can be
-overwritten while updating, but it converges to the correct answer. For example,
+We use atomic_min to ensure that only one thread at a time assigns a smaller label to labels[old_label] and to
+labels[y*w + x]. Specifically, we have
+
+atomic_min(&labels[old_label], new_label);
+atomic_min(&labels[y*w + x], labels[old_label]);
+
+Without atomics, we would have something like
+
+labels[old_label] = min(labels[old_label], new_label);
+labels[y*w + x] = min(labels[y*w+x], labels[old_label]);
+
+Atomics ensure in a thread-safe manner that labels[old_label] and labels[y*w + x] are assigned the smallest label
+possible. Without atomics, multiple threads can update labels[old_label] and labels[y*w+x] at once, confusing the
+min() calls; it is no longer guaranteed that the labels will be assigned the smallest value possible. However,
+they should still be assigned a value smaller than than their original at the start of the iteration.
+
+>>Consider whether the final result would still be
+correct, what might be the impact on the performance of the algorithm (time and iterations),
+could a value in labels ever increase, and could it increase between iterations?
+
+Within an entire iteration, it is **still guaranteed** that a label's value will decrease or stay the same.
+Threads will only attempt to change the label if (new_label != old_label), and the minimum call ensures that a value will
+be assigned to the labels that is less than the thread's read of the value. At the end of the
+iteration, the label might not have the smallest value possible (i.e. it might have a smaller value if atomics were used),
+but it should have a value smaller than its original one.
+
+Therefore, the algorithm should still be correct. The algorithm will likely take additional iterations to complete
+as the smallest label will probably not be assigned each generation. However, the increase in the number of iterations
+may be offset by the speedup of not using atomics.
+
+Luckily, we can adjust our code to test if my predictions are correct. Avoiding atomics, we find:
 
 ## Maze 1
 Finished after 11 iterations, 1.244192 ms total, 0.113108363636 ms per iteration
@@ -100,4 +131,5 @@ Found 2 regions
 Finished after 10 iterations, 1.113504 ms total, 0.1113504 ms per iteration
 Found 35 regions
 
-The number of iterations varies as well, somewhere between 8 and 12.
+The result is always correct. On average, it looks like more iterations are used, but the time per iteration
+is about the same. It is therefore more advantageous to use atomics on my hardware.

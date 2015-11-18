@@ -155,12 +155,12 @@ propagate_labels(__global __read_write int *labels,
             *(changed_flag) += 1;
 
             //For part 3: using atomics
-            //atomic_min(&labels[old_label], new_label);
-            //atomic_min(&labels[y*w + x], labels[old_label]);
+            atomic_min(&labels[old_label], new_label);
+            atomic_min(&labels[y*w + x], labels[old_label]);
 
             //For part 5...do we need atomics?
-            labels[old_label] = min(labels[old_label], new_label);
-            labels[y*w + x] = min(labels[y*w+x], labels[old_label]);
+            //labels[old_label] = min(labels[old_label], new_label);
+            //labels[y*w + x] = min(labels[y*w+x], labels[old_label]);
         }
     }
 }
