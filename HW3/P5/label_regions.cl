@@ -125,7 +125,7 @@ propagate_labels(__global __read_write int *labels,
             }
         }
     }
-     barrier(CLK_LOCAL_MEM_FENCE);
+    barrier(CLK_LOCAL_MEM_FENCE);
 
     // stay in bounds, don't update the walls.
     if ((x < w) && (y < h) && (old_label < max_index)) {
